@@ -4,6 +4,9 @@
 *.so
 *.dylib
 *.pem
+*.log
+
+.DS_Store
 
 # Test binary, build with `go test -c`
 *.test
@@ -15,4 +18,6 @@
 .glide/
 
 vendor/
+misc/
 svxlink-mon
+svxm
