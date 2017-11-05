@@ -1,7 +1,7 @@
 language: go
 
 go:
-  - stable
+  - 1.9.x
 
 install:
   - go get github.com/golang/dep/cmd/dep
