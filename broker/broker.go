@@ -4,7 +4,7 @@ import "time"
 
 // Broker is the message broker for agents and monitor
 type Broker interface {
-	Publish(string) Token
+	Publish(topic, text string) Token
 	Close()
 }
 

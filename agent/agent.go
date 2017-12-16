@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jibbolo/svxlink-mon/broker"
-	"github.com/jibbolo/svxlink-mon/broker/console"
+	"github.com/jibbolo/svxlink-mon/broker/aws"
 )
 
 // Agent is responsible for reading file and push its content to
@@ -21,7 +21,11 @@ func New(path string) (*Agent, error) {
 		return nil, fmt.Errorf("invalid file: %v", err)
 	}
 	//msgBroker := google.New()
-	msgBroker := console.New()
+	endpoint := ""
+	msgBroker, err := aws.New(endpoint, "eu-west-1", "", "")
+	if err != nil {
+		return nil, fmt.Errorf("can't start broker: %v", err)
+	}
 	return &Agent{path, msgBroker}, nil
 }
 
@@ -46,7 +50,7 @@ func (a *Agent) cat(f *os.File) error {
 		case nr == 0: // EOF
 			return nil
 		case nr > 0:
-			token := a.Broker.Publish(string(buf[0:nr]))
+			token := a.Broker.Publish("mytopic", string(buf[0:nr]))
 			if token.Wait() && token.Error() != nil {
 				return fmt.Errorf("cat: error writing from %s: %s", f.Name(), token.Error())
 			}
