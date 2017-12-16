@@ -2,11 +2,10 @@ package agent
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/jibbolo/svxlink-mon/broker"
-	"github.com/jibbolo/svxlink-mon/broker/google"
+	"github.com/jibbolo/svxlink-mon/broker/console"
 )
 
 // Agent is responsible for reading file and push its content to
@@ -21,19 +20,20 @@ func New(path string) (*Agent, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, fmt.Errorf("invalid file: %v", err)
 	}
-	google := google.New()
-	return &Agent{path, google}, nil
+	//msgBroker := google.New()
+	msgBroker := console.New()
+	return &Agent{path, msgBroker}, nil
 }
 
 // Run starts checking the file and push its content forever
-func (a *Agent) Run() {
+func (a *Agent) Run() error {
 	f, err := os.Open(a.Path)
 	if err != nil {
-		log.Printf("can't open file: %v\n", err)
+		return fmt.Errorf("can't open file: %v", err)
 	}
 	defer f.Close()
 	defer a.Broker.Close()
-	log.Fatal(a.cat(f))
+	return a.cat(f)
 }
 
 func (a *Agent) cat(f *os.File) error {
@@ -42,13 +42,13 @@ func (a *Agent) cat(f *os.File) error {
 	for {
 		switch nr, er := f.Read(buf[:]); true {
 		case nr < 0:
-			return fmt.Errorf("cat: error reading from %s: %s\n", f.Name(), er.Error())
+			return fmt.Errorf("cat: error reading from %s: %s", f.Name(), er.Error())
 		case nr == 0: // EOF
 			return nil
 		case nr > 0:
 			token := a.Broker.Publish(string(buf[0:nr]))
 			if token.Wait() && token.Error() != nil {
-				return fmt.Errorf("cat: error writing from %s: %s\n", f.Name(), token.Error())
+				return fmt.Errorf("cat: error writing from %s: %s", f.Name(), token.Error())
 			}
 		}
 	}
