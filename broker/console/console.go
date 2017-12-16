@@ -15,14 +15,16 @@ func New() *ConsoleBroker {
 }
 
 func (g *ConsoleBroker) Publish(text string) broker.Token {
-	fmt.Fprint(os.Stdout, text)
-	return token{}
+	_, err := fmt.Fprint(os.Stdout, text)
+	return token{err}
 }
 
 func (g *ConsoleBroker) Close() {}
 
-type token struct{}
+type token struct {
+	err error
+}
 
 func (token) Wait() bool                     { return true }
 func (token) WaitTimeout(time.Duration) bool { return true }
-func (token) Error() error                   { return nil }
+func (t token) Error() error                 { return t.err }
