@@ -2,31 +2,23 @@ package agent
 
 import (
 	"fmt"
+	"io"
 	"os"
-
-	"github.com/jibbolo/svxlink-mon/broker"
-	"github.com/jibbolo/svxlink-mon/broker/aws"
 )
 
 // Agent is responsible for reading file and push its content to
 // MQTT server
 type Agent struct {
-	Path   string
-	Broker broker.Broker
+	Path string
+	w    io.WriteCloser
 }
 
 // New create new Agent instnace
-func New(path string) (*Agent, error) {
+func New(path string, w io.WriteCloser) (*Agent, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, fmt.Errorf("invalid file: %v", err)
 	}
-	//msgBroker := google.New()
-	endpoint := ""
-	msgBroker, err := aws.New(endpoint, "eu-west-1", "", "")
-	if err != nil {
-		return nil, fmt.Errorf("can't start broker: %v", err)
-	}
-	return &Agent{path, msgBroker}, nil
+	return &Agent{path, w}, nil
 }
 
 // Run starts checking the file and push its content forever
@@ -36,7 +28,7 @@ func (a *Agent) Run() error {
 		return fmt.Errorf("can't open file: %v", err)
 	}
 	defer f.Close()
-	defer a.Broker.Close()
+	defer a.w.Close()
 	return a.cat(f)
 }
 
@@ -50,9 +42,8 @@ func (a *Agent) cat(f *os.File) error {
 		case nr == 0: // EOF
 			return nil
 		case nr > 0:
-			token := a.Broker.Publish("mytopic", string(buf[0:nr]))
-			if token.Wait() && token.Error() != nil {
-				return fmt.Errorf("cat: error writing from %s: %s", f.Name(), token.Error())
+			if _, err := a.w.Write(buf[0:nr]); err != nil {
+				return fmt.Errorf("cat: error writing from %s: %s", f.Name(), err)
 			}
 		}
 	}

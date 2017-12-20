@@ -1,4 +1,4 @@
-package aws
+package broker
 
 import (
 	"log"
@@ -8,17 +8,16 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/signer/v4"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/jibbolo/svxlink-mon/broker"
 	"github.com/satori/go.uuid"
 )
 
 const awsService = "iotdevicegateway"
 
 type AWSBroker struct {
-	client mqtt.Client
+	basicBroker
 }
 
-func New(endpoint, awsRegion, awsAccessKey, awsSecretKey string) (*AWSBroker, error) {
+func NewAWSBroker(endpoint, awsRegion, awsAccessKey, awsSecretKey, topic string) (*AWSBroker, error) {
 
 	creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
@@ -46,13 +45,5 @@ func New(endpoint, awsRegion, awsAccessKey, awsSecretKey string) (*AWSBroker, er
 	if token.Wait() && token.Error() != nil {
 		return nil, token.Error()
 	}
-	return &AWSBroker{client}, nil
-}
-
-func (g *AWSBroker) Publish(topic, text string) broker.Token {
-	return g.client.Publish(topic, 1, false, text)
-}
-
-func (g *AWSBroker) Close() {
-	g.client.Disconnect(250)
+	return &AWSBroker{basicBroker{client, topic}}, nil
 }
