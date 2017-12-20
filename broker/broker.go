@@ -25,10 +25,10 @@ func (b *Broker) Close() error {
 	return nil
 }
 
-func (b *Broker) Subscribe(topic string, fn MessageHandler) error {
-	token := b.Client.Subscribe(topic, 0, b.messageHandler(fn))
+func (b *Broker) Subscribe(fn MessageHandler) error {
+	token := b.Client.Subscribe(b.Topic, 1, b.messageHandler(fn))
 	if token.Wait() && token.Error() != nil {
-		return fmt.Errorf("can't subscribe to %s: %s", topic, token.Error())
+		return fmt.Errorf("can't subscribe to %s: %s", b.Topic, token.Error())
 	}
 	return nil
 }
