@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -29,7 +30,7 @@ func (a *Agent) Run() error {
 	}
 	defer f.Close()
 	defer a.w.Close()
-	return a.cat(f)
+	return a.readlines(f)
 }
 
 func (a *Agent) cat(f *os.File) error {
@@ -47,4 +48,17 @@ func (a *Agent) cat(f *os.File) error {
 			}
 		}
 	}
+}
+
+func (a *Agent) readlines(f *os.File) error {
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		if _, err := a.w.Write(scanner.Bytes()); err != nil {
+			return fmt.Errorf("cat: error writing from %s: %s", f.Name(), err)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("cat: error reading from %s: %s", f.Name(), err)
+	}
+	return nil
 }
