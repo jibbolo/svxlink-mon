@@ -13,11 +13,7 @@ import (
 
 const awsService = "iotdevicegateway"
 
-type AWSBroker struct {
-	basicBroker
-}
-
-func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*AWSBroker, error) {
+func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*Broker, error) {
 
 	creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
@@ -45,5 +41,5 @@ func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*
 	if token.Wait() && token.Error() != nil {
 		return nil, token.Error()
 	}
-	return &AWSBroker{basicBroker{client, topic}}, nil
+	return &Broker{client, topic}, nil
 }

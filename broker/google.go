@@ -16,11 +16,7 @@ const googleUsername = "unused"
 const googleMQTTVersion = 4
 const clientIDFormat = "projects/%s/locations/%s/registries/%s/devices/%s"
 
-type GoogleBroker struct {
-	basicBroker
-}
-
-func NewGoogleBroker(region, projectID, registryID, deviceID, certRootPath, privateKeyPath string) (*GoogleBroker, error) {
+func NewGoogleBroker(region, projectID, registryID, deviceID, certRootPath, privateKeyPath string) (*Broker, error) {
 
 	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -63,5 +59,5 @@ func NewGoogleBroker(region, projectID, registryID, deviceID, certRootPath, priv
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatalf("networkerror: %v", token.Error())
 	}
-	return &GoogleBroker{basicBroker{client, "/devices/" + deviceID + "/events"}}, nil
+	return &Broker{client, "/devices/" + deviceID + "/events"}, nil
 }
