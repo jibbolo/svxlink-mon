@@ -14,7 +14,7 @@ func AgentCmd(filepath string, wg *sync.WaitGroup) {
 	var a *agent.Agent
 	var err error
 
-	// broker, err := broker.NewAWSBroker("", "eu-west-1", "", "", "mytopic")
+	// broker, err := broker.NewAWSBroker("eu-west-1", ", "", "", "mytopic")
 	// if err != nil {
 	// 	log.Fatalf("Can't init msg broker: %v", err)
 	// 	return

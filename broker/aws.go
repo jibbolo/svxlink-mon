@@ -17,7 +17,7 @@ type AWSBroker struct {
 	basicBroker
 }
 
-func NewAWSBroker(endpoint, awsRegion, awsAccessKey, awsSecretKey, topic string) (*AWSBroker, error) {
+func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*AWSBroker, error) {
 
 	creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
@@ -32,7 +32,7 @@ func NewAWSBroker(endpoint, awsRegion, awsAccessKey, awsSecretKey, topic string)
 
 	signer := v4.NewSigner(creds)
 	req, _ := http.NewRequest("GET", endpoint, nil)
-	_, err := signer.Presign(req, nil, awsService, awsRegion, 5*time.Minute, time.Now())
+	_, err := signer.Presign(req, nil, awsService, region, 5*time.Minute, time.Now())
 	if err != nil {
 		log.Fatalf("expect no error, got %v", err)
 	}
