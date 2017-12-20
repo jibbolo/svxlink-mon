@@ -26,6 +26,11 @@ func main() {
 
 	var wg sync.WaitGroup
 
+	if *monitor {
+		wg.Add(1)
+		go cmd.MonitorCmd(&wg)
+	}
+
 	if *agentPath != "" {
 		wg.Add(1)
 		go cmd.AgentCmd(*agentPath, &wg)
