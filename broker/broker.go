@@ -1,42 +1,11 @@
 package broker
 
-import (
-	"fmt"
-
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-)
+import "io"
 
 // Broker is the message broker for agents and monitor
-type Broker struct {
-	Client mqtt.Client
-	Topic  string
-}
-
-func (b *Broker) Write(p []byte) (int, error) {
-	token := b.Client.Publish(b.Topic, 1, false, string(p))
-	if token.Wait() && token.Error() != nil {
-		return 0, fmt.Errorf("can't publish: %s", token.Error())
-	}
-	return 0, nil
-}
-
-func (b *Broker) Close() error {
-	b.Client.Disconnect(250)
-	return nil
-}
-
-func (b *Broker) Subscribe(fn MessageHandler) error {
-	token := b.Client.Subscribe(b.Topic, 1, b.messageHandler(fn))
-	if token.Wait() && token.Error() != nil {
-		return fmt.Errorf("can't subscribe to %s: %s", b.Topic, token.Error())
-	}
-	return nil
-}
-
-func (b *Broker) messageHandler(fn MessageHandler) mqtt.MessageHandler {
-	return func(client mqtt.Client, msg mqtt.Message) {
-		fn(msg.Payload())
-	}
+type Broker interface {
+	io.WriteCloser
+	Subscribe(fn MessageHandler) error
 }
 
 type MessageHandler func([]byte)

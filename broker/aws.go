@@ -13,7 +13,7 @@ import (
 
 const awsService = "iotdevicegateway"
 
-func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*Broker, error) {
+func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*BasicBroker, error) {
 	creds := credentials.NewChainCredentials(
 		[]credentials.Provider{
 			&credentials.EnvProvider{},
@@ -40,5 +40,5 @@ func NewAWSBroker(region, endpoint, awsAccessKey, awsSecretKey, topic string) (*
 	if token.Wait() && token.Error() != nil {
 		return nil, fmt.Errorf("can't' connect: %v", token.Error())
 	}
-	return &Broker{client, topic}, nil
+	return &BasicBroker{client, topic}, nil
 }
