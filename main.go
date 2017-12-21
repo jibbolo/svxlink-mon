@@ -5,7 +5,7 @@ import (
 
 	"github.com/alecthomas/kingpin"
 	"github.com/jibbolo/svxlink-mon/broker"
-	"github.com/jibbolo/svxlink-mon/cmd"
+	"github.com/jibbolo/svxlink-mon/commands"
 )
 
 var build = "dev"
@@ -28,7 +28,6 @@ func main() {
 	var wg sync.WaitGroup
 
 	broker := broker.NewLoopback()
-	defer broker.Close()
 
 	if *monitor {
 		wg.Add(1)
@@ -37,7 +36,7 @@ func main() {
 
 	if *agentPath != "" {
 		wg.Add(1)
-		go cmd.AgentCmd(*agentPath, broker, &wg)
+		go cmd.AgentCmd(*agentPath, false, broker, &wg)
 	}
 
 	wg.Wait()
