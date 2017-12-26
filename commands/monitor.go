@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"sync"
 
 	"github.com/jibbolo/svxlink-mon/broker"
+	"github.com/jibbolo/svxlink-mon/monitor"
 )
 
-func MonitorCmd(broker broker.Broker, wg *sync.WaitGroup) {
+func MonitorCmd(broker broker.Broker, quit chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	broker.Subscribe(func(msg []byte) {
-		fmt.Printf("--> %s\n", msg)
-	})
-	select {}
+	if err := monitor.New(broker).Run(quit); err != nil {
+		log.Fatalf("Monitor error: %v", err)
+	}
 
 }

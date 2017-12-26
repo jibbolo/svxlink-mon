@@ -29,14 +29,16 @@ func main() {
 
 	broker := broker.NewLoopback()
 
-	if *monitor {
-		wg.Add(1)
-		go cmd.MonitorCmd(broker, &wg)
-	}
+	quit := make(chan bool)
 
 	if *agentPath != "" {
 		wg.Add(1)
-		go cmd.AgentCmd(*agentPath, false, broker, &wg)
+		go cmd.AgentCmd(*agentPath, false, broker, quit, &wg)
+	}
+
+	if *monitor {
+		wg.Add(1)
+		go cmd.MonitorCmd(broker, quit, &wg)
 	}
 
 	wg.Wait()
