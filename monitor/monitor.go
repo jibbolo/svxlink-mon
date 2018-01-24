@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jibbolo/svxlink-mon/broker"
+	"github.com/jibbolo/svxlink-mon/monitor/events"
 )
 
 type Monitor struct {
@@ -17,13 +18,15 @@ func New(broker broker.Broker) *Monitor {
 
 func (m *Monitor) Run(quit chan bool) error {
 	err := m.broker.Subscribe(func(msg []byte) {
-		fmt.Printf("--> %s\n", msg)
+		// fmt.Printf("--> %s\n", msg)
+		events.DefaultHandler.Parse(msg)
 	})
 	if err != nil {
 		return err
 	}
 	select {
 	case <-quit:
+		fmt.Printf("%s\n", events.DefaultHandler)
 		return nil
 	}
 }
