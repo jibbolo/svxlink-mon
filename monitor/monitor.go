@@ -8,25 +8,29 @@ import (
 )
 
 type Monitor struct {
-	broker broker.Broker
+	handler *events.Handler
+	broker  broker.Broker
 }
 
 // New create new Monitor instnace
 func New(broker broker.Broker) *Monitor {
-	return &Monitor{broker}
+	return &Monitor{events.New(), broker}
 }
 
 func (m *Monitor) Run(quit chan bool) error {
-	err := m.broker.Subscribe(func(msg []byte) {
-		// fmt.Printf("--> %s\n", msg)
-		events.DefaultHandler.Parse(msg)
-	})
+	err := m.broker.Subscribe(m.handler.Handle)
 	if err != nil {
 		return err
 	}
+
+	go func() {
+		for event := range m.handler.Comms {
+			fmt.Printf("%+v\n", event)
+		}
+	}()
+
 	select {
 	case <-quit:
-		fmt.Printf("%s\n", events.DefaultHandler)
 		return nil
 	}
 }
