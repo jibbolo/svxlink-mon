@@ -8,7 +8,7 @@ import (
 	"github.com/jibbolo/svxlink-mon/agent"
 )
 
-func AgentCmd(filepath string, follow bool, broker io.WriteCloser, quit chan bool, wg *sync.WaitGroup) {
+func AgentCmd(filepath string, broker io.WriteCloser, quit chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 	// defer func() {
 	// 	time.Sleep(time.Second)
@@ -17,7 +17,7 @@ func AgentCmd(filepath string, follow bool, broker io.WriteCloser, quit chan boo
 	var a *agent.Agent
 	var err error
 
-	if a, err = agent.New(filepath, broker, follow); err != nil {
+	if a, err = agent.New(filepath, broker, true); err != nil {
 		log.Fatalf("Can't init agent: %v", err)
 		return
 	}

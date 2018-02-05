@@ -33,7 +33,7 @@ func main() {
 
 	if *agentPath != "" {
 		wg.Add(1)
-		go cmd.AgentCmd(*agentPath, false, broker, quit, &wg)
+		go cmd.AgentCmd(*agentPath, broker, quit, &wg)
 	}
 
 	if *monitor {
