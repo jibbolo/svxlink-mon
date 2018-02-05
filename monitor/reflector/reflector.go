@@ -48,13 +48,13 @@ func (r *Reflector) updateLinkStatus(event parser.Event) {
 
 	switch event.(type) {
 	case *parser.ClientConnected:
-		r.Links[evtID].Status = "ready"
+		r.Links[evtID].Status = "idle"
 	case *parser.ClientDisconnected:
 		r.Links[evtID].Status = "disconnected"
 	case *parser.ClientTalkStart:
 		r.Links[evtID].Status = "talk"
 	case *parser.ClientTalkStop:
-		r.Links[evtID].Status = "ready"
+		r.Links[evtID].Status = "idle"
 	default:
 		r.Links[evtID].Status = "unknown"
 	}
