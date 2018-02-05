@@ -12,10 +12,19 @@ type Event interface {
 
 type ClientConnected struct{ *baseEvent }
 type ClientDisconnected struct{ *baseEvent }
+type ClientTalkStart struct{ *baseEvent }
+type ClientTalkStop struct{ *baseEvent }
 
 const ip = `(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\:[0-9]+`
 const id = `([0-9A-Z]{6})`
-const ts = `([a-zA-z]{3} [a-zA-z]{3} [ 0-9]{2} [\:0-9]{8} [0-9]{4})`
+
+//Sun Sep 24 17:50:18 2017
+const ts1 = `([a-zA-z]{3} [a-zA-z]{3} [ 0-9]{2} [\:0-9]{8} [0-9]{4})`
+
+//Sat 03 Feb 2018 04:30:11 PM CET
+const ts2 = `([a-zA-z]{3} [0-9]{2} [a-zA-z]{3} [0-9]{4} [\:0-9]{8} [AP]{1}M [A-Z]+)`
+
+const ts = ts1
 
 var rules = []struct {
 	rgx *regexp.Regexp
@@ -27,6 +36,22 @@ var rules = []struct {
 				ts: string(res[1]),
 				id: string(res[2]),
 				ip: string(res[3]),
+			},
+		}
+	}},
+	{regexp.MustCompile(ts + ": " + id + ": Talker start"), func(res [][]byte) Event {
+		return &ClientTalkStart{
+			&baseEvent{
+				ts: string(res[1]),
+				id: string(res[2]),
+			},
+		}
+	}},
+	{regexp.MustCompile(ts + ": " + id + ": Talker stop"), func(res [][]byte) Event {
+		return &ClientTalkStop{
+			&baseEvent{
+				ts: string(res[1]),
+				id: string(res[2]),
 			},
 		}
 	}},
