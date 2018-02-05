@@ -21,16 +21,24 @@ func New(broker broker.Broker) *Monitor {
 }
 
 func (m *Monitor) Run(quit chan bool) error {
+	defer func() {
+		quit <- true
+	}()
 
 	err := m.broker.Subscribe(m.reflector.Handle)
 	if err != nil {
 		return err
 	}
 
-	go term.Run(m.reflector)
+	uiQuit := make(chan bool)
+	var uiErr error
+	go func() {
+		uiErr = term.Loop(m.reflector)
+		uiQuit <- true
+	}()
 
 	select {
-	case <-quit:
-		return nil
+	case <-uiQuit:
+		return uiErr
 	}
 }

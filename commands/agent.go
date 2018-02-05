@@ -4,17 +4,16 @@ import (
 	"io"
 	"log"
 	"sync"
-	"time"
 
 	"github.com/jibbolo/svxlink-mon/agent"
 )
 
 func AgentCmd(filepath string, follow bool, broker io.WriteCloser, quit chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
-	defer func() {
-		time.Sleep(time.Second)
-		quit <- true
-	}()
+	// defer func() {
+	// 	time.Sleep(time.Second)
+	// 	quit <- true
+	// }()
 	var a *agent.Agent
 	var err error
 

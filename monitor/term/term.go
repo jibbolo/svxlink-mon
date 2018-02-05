@@ -6,8 +6,33 @@ import (
 	ui "github.com/gizak/termui"
 )
 
-type rowgetter interface {
+type RowGetter interface {
 	GetRows() [][]string
+}
+
+func Loop(src RowGetter) error {
+	if err := ui.Init(); err != nil {
+		return err
+	}
+	defer ui.Close()
+
+	go func() {
+		for {
+			Render(src.GetRows())
+			time.Sleep(100 * time.Millisecond)
+		}
+	}()
+
+	ui.Handle("/sys/kbd/q", func(ui.Event) {
+		ui.StopLoop()
+	})
+
+	ui.Loop()
+	return nil
+}
+
+func Close() {
+	ui.Close()
 }
 
 func Render(rows [][]string) {
@@ -25,27 +50,4 @@ func Render(rows [][]string) {
 	table.SetSize()
 
 	ui.Render(table)
-}
-
-func Run(src rowgetter) error {
-	err := ui.Init()
-	if err != nil {
-		return err
-	}
-	defer ui.Close()
-	go func() {
-		for {
-			Render(src.GetRows())
-			time.Sleep(100 * time.Millisecond)
-		}
-	}()
-
-	ui.Handle("/sys/kbd/q", func(ui.Event) {
-		ui.StopLoop()
-	})
-	ui.Handle("/sys/kbd/C-x", func(ui.Event) {
-		ui.StopLoop()
-	})
-	ui.Loop()
-	return nil
 }
