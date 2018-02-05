@@ -27,6 +27,10 @@ func Loop(src RowGetter) error {
 		ui.StopLoop()
 	})
 
+	ui.Handle("/sys/kbd/Q", func(ui.Event) {
+		ui.StopLoop()
+	})
+
 	ui.Loop()
 	return nil
 }
@@ -44,7 +48,8 @@ func Render(rows [][]string) {
 	table.Rows = rowsWithHeader
 	table.FgColor = ui.ColorWhite
 	table.BgColor = ui.ColorDefault
-	table.Y = 0
+	table.Y = 1
+	table.BorderLabel = " SVXLINK-MON - Press Q to quit "
 	table.X = 0
 	table.Analysis()
 	table.SetSize()
