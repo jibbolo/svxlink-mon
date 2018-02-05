@@ -10,10 +10,7 @@ import (
 
 func AgentCmd(filepath string, broker io.WriteCloser, quit chan bool, wg *sync.WaitGroup) {
 	defer wg.Done()
-	// defer func() {
-	// 	time.Sleep(time.Second)
-	// 	quit <- true
-	// }()
+
 	var a *agent.Agent
 	var err error
 
