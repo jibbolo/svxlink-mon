@@ -6,6 +6,8 @@ import (
 	ui "github.com/gizak/termui"
 )
 
+const label = " SVXLINK-MON - Press Q to quit - https://goo.gl/igcxWT "
+
 type RowGetter interface {
 	GetRows() [][]string
 }
@@ -48,8 +50,9 @@ func Render(rows [][]string) {
 	table.Rows = rowsWithHeader
 	table.FgColor = ui.ColorWhite
 	table.BgColor = ui.ColorDefault
-	table.Y = 1
-	table.BorderLabel = " SVXLINK-MON - Press Q to quit "
+	table.Y = 0
+	table.BorderLabel = label
+	table.BorderLabelFg = ui.ColorRed
 	table.X = 0
 	table.Analysis()
 	table.SetSize()
