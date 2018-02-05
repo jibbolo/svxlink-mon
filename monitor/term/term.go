@@ -43,7 +43,7 @@ func Close() {
 
 func Render(rows [][]string) {
 	rowsWithHeader := append([][]string{
-		[]string{"ID", "IP Addr", "Status", "Time"},
+		[]string{"ID", "IP Addr", "Status", "Connected On", "Last Seen"},
 	}, rows...)
 
 	table := ui.NewTable()

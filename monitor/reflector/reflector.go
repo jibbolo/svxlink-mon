@@ -49,6 +49,7 @@ func (r *Reflector) updateLinkStatus(event parser.Event) {
 	switch event.(type) {
 	case *parser.ClientConnected:
 		r.Links[evtID].Status = "idle"
+		r.Links[evtID].ConnectedAt = event.GetTS()
 	case *parser.ClientDisconnected:
 		r.Links[evtID].Status = "disconnected"
 	case *parser.ClientTalkStart:
@@ -68,7 +69,7 @@ func (r *Reflector) GetRows() [][]string {
 	rows := make([][]string, 0)
 	for _, l := range r.Links {
 		rows = append(rows, []string{
-			l.ID, l.IP, l.Status, l.TS,
+			l.ID, l.IP, l.Status, l.ConnectedAt, l.TS,
 		})
 	}
 	sort.Slice(rows, func(i, j int) bool {
@@ -79,8 +80,9 @@ func (r *Reflector) GetRows() [][]string {
 
 // RadioLink is the struct for radiolinks
 type RadioLink struct {
-	ID     string
-	IP     string
-	TS     string
-	Status string
+	ID          string
+	IP          string
+	TS          string
+	ConnectedAt string
+	Status      string
 }
