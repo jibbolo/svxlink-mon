@@ -24,7 +24,7 @@ const ts1 = `([a-zA-z]{3} [a-zA-z]{3} [ 0-9]{2} [\:0-9]{8} [0-9]{4})`
 //Sat 03 Feb 2018 04:30:11 PM CET
 const ts2 = `([a-zA-z]{3} [0-9]{2} [a-zA-z]{3} [0-9]{4} [\:0-9]{8} [AP]{1}M [A-Z]+)`
 
-const ts = ts1
+const ts = ts2
 
 var rules = []struct {
 	rgx *regexp.Regexp
