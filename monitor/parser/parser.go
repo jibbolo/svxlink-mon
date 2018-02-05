@@ -1,4 +1,4 @@
-package events
+package parser
 
 import (
 	"regexp"
@@ -9,8 +9,7 @@ const id = `([0-9A-Z]{6})`
 
 // const ID = `(IR0UFQ)`
 
-type Handler struct {
-	Comms  chan *Event
+type Parser struct {
 	events []*regexp.Regexp
 }
 
@@ -20,24 +19,21 @@ var rrr = []*regexp.Regexp{
 	regexp.MustCompile(id + ": disconnected: Connection closed by remote peer"),
 }
 
-func NewHandler() *Handler {
-	return &Handler{
-		Comms:  make(chan *Event),
+func New() *Parser {
+	return &Parser{
 		events: rrr}
 
 }
 
-func (h *Handler) Handle(msg []byte) {
+func (h *Parser) Parse(msg []byte) *Event {
 	for _, rgx := range h.events {
 		res := rgx.FindSubmatch(msg)
-		if res != nil && h.Comms != nil {
+		if res != nil {
 			id := string(res[1])
-			h.Comms <- &Event{
+			return &Event{
 				ID: id,
 			}
-			return
 		}
 	}
+	return nil
 }
-
-func (h *Handler) Close() { close(h.Comms) }

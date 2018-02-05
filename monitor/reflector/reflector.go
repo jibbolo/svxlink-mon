@@ -4,23 +4,33 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/jibbolo/svxlink-mon/monitor/events"
+	"github.com/jibbolo/svxlink-mon/monitor/parser"
 )
 
 // Reflector is the main struct
 type Reflector struct {
-	mutex *sync.RWMutex
-	Links map[string]*RadioLink
+	parser *parser.Parser
+	mutex  *sync.RWMutex
+	Links  map[string]*RadioLink
 }
 
+// New create new Reflector instance
 func New() *Reflector {
 	return &Reflector{
-		mutex: &sync.RWMutex{},
-		Links: make(map[string]*RadioLink),
+		parser: parser.New(),
+		mutex:  &sync.RWMutex{},
+		Links:  make(map[string]*RadioLink),
 	}
 }
 
-func (r *Reflector) UpdateLinkStatus(event *events.Event) {
+// Handle handles msg data from MQTT topic
+func (r *Reflector) Handle(msg []byte) {
+	if event := r.parser.Parse(msg); event != nil {
+		r.updateLinkStatus(event)
+	}
+}
+
+func (r *Reflector) updateLinkStatus(event *parser.Event) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -40,6 +50,7 @@ func (r *Reflector) UpdateLinkStatus(event *events.Event) {
 	}
 }
 
+// GetRows returns raw data for UI
 func (r *Reflector) GetRows() [][]string {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
