@@ -30,23 +30,27 @@ func (r *Reflector) Handle(msg []byte) {
 	}
 }
 
-func (r *Reflector) updateLinkStatus(event *parser.Event) {
+func (r *Reflector) updateLinkStatus(event parser.Event) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	if _, ok := r.Links[event.ID]; !ok {
-		r.Links[event.ID] = &RadioLink{}
+	evtID := event.GetID()
+
+	if _, ok := r.Links[evtID]; !ok {
+		r.Links[evtID] = &RadioLink{}
 	}
 
-	r.Links[event.ID].ID = event.ID
-	r.Links[event.ID].IP = event.IP.String()
-	switch event.Action {
-	case "connect":
-		r.Links[event.ID].Status = "connected"
-	case "talk":
-		r.Links[event.ID].Status = "talking"
+	r.Links[evtID].ID = evtID
+	r.Links[evtID].TS = event.GetTS()
+	r.Links[evtID].IP = event.GetIP()
+
+	switch event.(type) {
+	case *parser.ClientConnected:
+		r.Links[evtID].Status = "connected"
+	case *parser.ClientDisconnected:
+		r.Links[evtID].Status = "disconnected"
 	default:
-		r.Links[event.ID].Status = "disconnected"
+		r.Links[evtID].Status = "unknown"
 	}
 }
 
@@ -58,7 +62,7 @@ func (r *Reflector) GetRows() [][]string {
 	rows := make([][]string, 0)
 	for _, l := range r.Links {
 		rows = append(rows, []string{
-			l.ID, l.IP, l.Status,
+			l.ID, l.IP, l.Status, l.TS,
 		})
 	}
 	sort.Slice(rows, func(i, j int) bool {
@@ -71,5 +75,6 @@ func (r *Reflector) GetRows() [][]string {
 type RadioLink struct {
 	ID     string
 	IP     string
+	TS     string
 	Status string
 }
