@@ -20,7 +20,7 @@ var rrr = []*regexp.Regexp{
 	regexp.MustCompile(id + ": disconnected: Connection closed by remote peer"),
 }
 
-func New() *Handler {
+func NewHandler() *Handler {
 	return &Handler{
 		Comms:  make(chan *Event),
 		events: rrr}

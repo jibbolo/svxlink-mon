@@ -1,31 +1,40 @@
 package monitor
 
 import (
-	"fmt"
-
 	"github.com/jibbolo/svxlink-mon/broker"
 	"github.com/jibbolo/svxlink-mon/monitor/events"
+	"github.com/jibbolo/svxlink-mon/monitor/reflector"
+	"github.com/jibbolo/svxlink-mon/monitor/term"
 )
 
 type Monitor struct {
-	handler *events.Handler
-	broker  broker.Broker
+	reflector *reflector.Reflector
+	handler   *events.Handler
+	broker    broker.Broker
 }
 
 // New create new Monitor instnace
 func New(broker broker.Broker) *Monitor {
-	return &Monitor{events.New(), broker}
+	return &Monitor{
+		reflector.New(),
+		events.NewHandler(),
+		broker,
+	}
+
 }
 
 func (m *Monitor) Run(quit chan bool) error {
+
 	err := m.broker.Subscribe(m.handler.Handle)
 	if err != nil {
 		return err
 	}
 
+	go term.Run(m.reflector)
+
 	go func() {
 		for event := range m.handler.Comms {
-			fmt.Printf("%+v\n", event)
+			m.reflector.UpdateLinkStatus(event)
 		}
 	}()
 
@@ -33,16 +42,4 @@ func (m *Monitor) Run(quit chan bool) error {
 	case <-quit:
 		return nil
 	}
-}
-
-// Thu Sep 28 15:32:09 2017: IW0HKS: Login OK from 195.94.189.122:63358
-// Fri Oct  6 20:01:16 2017: IR0UFQ: Client 44.208.124.17:38551 disconnected: Connection closed by remote peer
-
-// Reflector is the main struct
-type Reflector struct {
-}
-
-// RadioLink is the struct for radiolinks
-type RadioLink struct {
-	IP string
 }
