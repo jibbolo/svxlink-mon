@@ -11,6 +11,7 @@ before_deploy:
 - git checkout -- Gopkg.lock
 - git config --local user.name "jibbolo"
 - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
+- git tag -f latest
 deploy:
   provider: releases
   api_key:
