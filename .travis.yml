@@ -18,6 +18,7 @@ deploy:
     secure: rldY6OlWPhWQn4wqcXZPDi9LgESrdEQjk3QngyRZnNz0D1LtzbrvCJjeQZR8Y62HbkbZlN7SXCDulDCltEkzWw4wfIcADywy8r526j1Df02tLcV/JHMicVn0iEZeGsWyM/gQr0snPSK+J9RvOJTynhpwIk0J+9PQ2fFgWMDBScBB1CO51QCpWWmtBUyPFB26SWgDe3IjHHZyHK1dPpoc4vj+boV1YVc5vrLczGfkyVcgrC8gtS28rRCtK2RG5G6NSWsFMC5ZPfH9kpwMwxLnWjzvKOdTeoaJ1Bm9u6XQ97rs2HS0cm0jNvhP7ShBKmv2nEiCCLVkgFVtCfaSGyoV+qMjMWF3tmnaZVHVvWSSUfpEVlgAQ7tZB/j2mY2v6JH0fg49SeK9z5OCE7TIiMqdMwwwx14662H1PGDPQ+Alxzs+0EWFqFwfeVcdcx0stvc8xrn8ONtxaEr0nAqX2+9GNB2fx0v+uF0hGWwP4plyNFo00pBooncRNnq1m5AlCHjw8shsxchIMpX3mgPuxsNggYVGKz4k02+PD2mQZ/P/9tuyil/T5uleWkX38xwPt0xUek6DTDV+aO3pMjPiKNF1G4C9asj6YQAjZbaDKbWPAY+l/PAn/mNS40J9H5tfg1INRx/TEzXWXL7k9uk/xEZQIpUN0UCYYe1SsRVYH9YF8Ec=
   file: svxm
   skip_cleanup: true
+  overwrite: true
   on:
     repo: jibbolo/svxlink-mon
     branch: master
