@@ -19,4 +19,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: jibbolo/svxlink-mon
-    tags: true
+    branch: master
