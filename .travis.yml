@@ -8,6 +8,7 @@ script:
 - go test -v ./...
 - GOOS=linux make build
 before_deploy:
+- git checkout -- Gopkg.lock
 - git config --local user.name "jibbolo"
 - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
 deploy:
